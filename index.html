@@ -21,157 +21,92 @@
   --mono: 'Share Tech Mono', monospace;
   --sans: 'Noto Sans JP', sans-serif;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-}
-
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
+  content: ''; position: fixed; inset: 0;
   background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
-  pointer-events: none;
-  z-index: 999;
+  pointer-events: none; z-index: 999;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 header {
   border-bottom: 1px solid var(--border);
-  padding: 16px 28px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 14px;
   background: linear-gradient(90deg, #0a1520 0%, #0f1e30 100%);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky; top: 0; z-index: 100;
 }
-
 .logo {
-  width: 38px; height: 38px;
-  border: 1.5px solid var(--accent);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  animation: pulse 2.5s ease-in-out infinite;
+  width: 36px; height: 36px; border: 1.5px solid var(--accent);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  animation: pulse 2.5s ease-in-out infinite; flex-shrink: 0;
 }
-.logo svg { width: 18px; height: 18px; fill: var(--accent); }
+.logo svg { width: 17px; height: 17px; fill: var(--accent); }
 @keyframes pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,255,0.4); }
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,200,255,.4); }
   50%      { box-shadow: 0 0 0 6px rgba(0,200,255,0); }
 }
-
-.header-title { font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: .15em; }
+.header-title { font-family: var(--mono); font-size: 16px; color: var(--accent); letter-spacing: .15em; }
 .header-sub   { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: .1em; margin-top: 2px; }
-
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .status-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .1em;
-  padding: 4px 10px;
-  border-radius: 3px;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  display: flex; align-items: center; gap: 6px;
-  transition: all .3s;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  padding: 4px 10px; border-radius: 3px; border: 1px solid var(--border);
+  color: var(--text-dim); display: flex; align-items: center; gap: 6px; transition: all .3s;
 }
 .status-badge.ok    { border-color: rgba(0,255,157,.4); color: var(--green); }
-.status-badge.error { border-color: rgba(255,74,74,.4); color: var(--red); }
+.status-badge.error { border-color: rgba(255,74,74,.4);  color: var(--red); }
 .sdot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .status-badge.ok .sdot { animation: blink 1.5s ease-in-out infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
 .settings-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: .1em;
-  padding: 5px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all .2s;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-family: var(--mono); font-size: 11px;
+  letter-spacing: .1em; padding: 5px 12px; border-radius: 3px; cursor: pointer; transition: all .2s;
 }
 .settings-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ===== MODAL ===== */
+/* MODAL */
 .modal-bg {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.75);
-  z-index: 500;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.75); z-index: 500;
   align-items: center; justify-content: center;
 }
 .modal-bg.show { display: flex; }
-
 .modal {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: min(560px, 95vw);
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  width: min(540px, 95vw); max-height: 90vh; overflow-y: auto; position: relative;
 }
 .modal::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--accent), transparent);
-  border-radius: 8px 8px 0 0;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent); border-radius: 8px 8px 0 0;
 }
-
 .modal-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
-.modal-title { font-family: var(--mono); font-size: 14px; color: var(--accent); letter-spacing: .15em; }
-.modal-close {
-  background: none; border: none; color: var(--text-dim); font-size: 20px;
-  cursor: pointer; line-height: 1; padding: 0 4px;
-}
+.modal-title { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: .15em; }
+.modal-close { background: none; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; }
 .modal-close:hover { color: var(--text); }
-
-.modal-body { padding: 24px; }
-
-.field-group { margin-bottom: 20px; }
-.field-label {
-  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
-  letter-spacing: .15em; text-transform: uppercase; margin-bottom: 6px; display: block;
-}
-.field-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.6; }
+.modal-body { padding: 22px; }
+.field-group { margin-bottom: 18px; }
+.field-label { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 5px; display: block; }
+.field-desc  { font-size: 11px; color: var(--text-dim); margin-bottom: 7px; line-height: 1.6; }
 .field-input {
-  width: 100%;
-  background: #080c12;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 10px 12px;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color .2s;
+  width: 100%; background: #080c12; border: 1px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 13px;
+  padding: 9px 12px; border-radius: 4px; outline: none; transition: border-color .2s;
 }
 .field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,200,255,.12); }
 .field-input::placeholder { color: var(--text-dim); opacity: .6; }
-
 .modal-footer {
-  padding: 16px 24px 20px;
-  border-top: 1px solid var(--border);
+  padding: 14px 22px 18px; border-top: 1px solid var(--border);
   display: flex; gap: 10px; justify-content: flex-end;
 }
-
 .btn {
   font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
-  padding: 9px 20px; border-radius: 4px; cursor: pointer;
+  padding: 8px 20px; border-radius: 4px; cursor: pointer;
   text-transform: uppercase; transition: all .2s; border: 1px solid;
 }
 .btn-primary {
@@ -179,59 +114,41 @@ header {
   position: relative; overflow: hidden;
 }
 .btn-primary::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--accent); transform: translateX(-100%);
-  transition: transform .25s; opacity: .12;
+  content: ''; position: absolute; inset: 0; background: var(--accent);
+  transform: translateX(-100%); transition: transform .25s; opacity: .12;
 }
 .btn-primary:hover::before { transform: translateX(0); }
 .btn-primary:hover { box-shadow: 0 0 12px rgba(0,200,255,.3); }
 .btn-secondary { background: transparent; border-color: var(--border); color: var(--text-dim); }
 .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
-
 .hint-box {
-  background: rgba(0,200,255,.05);
-  border: 1px solid rgba(0,200,255,.2);
-  border-radius: 4px;
-  padding: 12px 14px;
-  font-size: 11px;
-  color: var(--text-dim);
-  line-height: 1.7;
-  margin-top: 4px;
+  background: rgba(0,200,255,.05); border: 1px solid rgba(0,200,255,.2);
+  border-radius: 4px; padding: 12px 14px; font-size: 11px; color: var(--text-dim); line-height: 1.7; margin-top: 4px;
 }
 .hint-box a { color: var(--accent); text-decoration: none; }
 .hint-box a:hover { text-decoration: underline; }
 
-/* ===== SETUP BANNER ===== */
+/* SETUP BANNER */
 .setup-banner {
-  background: rgba(255,204,0,.07);
-  border: 1px solid rgba(255,204,0,.3);
-  border-radius: 6px;
-  padding: 14px 18px;
-  margin: 24px auto;
-  max-width: 860px;
-  font-size: 13px;
-  color: var(--warn);
+  background: rgba(255,204,0,.07); border: 1px solid rgba(255,204,0,.3);
+  border-radius: 6px; padding: 12px 18px; margin: 20px auto;
+  max-width: 820px; font-size: 13px; color: var(--warn);
   display: flex; align-items: center; gap: 12px;
 }
 .setup-banner button {
-  margin-left: auto;
-  background: transparent; border: 1px solid var(--warn); color: var(--warn);
+  margin-left: auto; background: transparent; border: 1px solid var(--warn); color: var(--warn);
   font-family: var(--mono); font-size: 11px; padding: 5px 14px;
-  border-radius: 3px; cursor: pointer; white-space: nowrap;
-  transition: all .2s;
+  border-radius: 3px; cursor: pointer; white-space: nowrap; transition: all .2s;
 }
 .setup-banner button:hover { background: rgba(255,204,0,.1); }
 
-/* ===== MAIN ===== */
-main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
+/* MAIN */
+main { max-width: 820px; margin: 0 auto; padding: 24px 20px; }
 
+/* CALENDAR PICKER */
 .query-panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 22px 24px;
-  margin-bottom: 24px;
-  position: relative; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 22px 24px; margin-bottom: 24px; position: relative; overflow: hidden;
 }
 .query-panel::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
@@ -242,57 +159,90 @@ main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
   color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px;
 }
 
-.date-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
-.date-group { display: flex; flex-direction: column; gap: 5px; }
-.date-group label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: .1em; }
-.date-group input[type="date"] {
-  background: #080c12; border: 1px solid var(--border);
-  color: var(--text); font-family: var(--mono); font-size: 14px;
-  padding: 8px 12px; border-radius: 4px; outline: none;
-  transition: border-color .2s; color-scheme: dark;
+/* Selected range display */
+.range-display {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap;
 }
-.date-group input[type="date"]:focus { border-color: var(--accent); }
+.range-chip {
+  font-family: var(--mono); font-size: 13px;
+  background: rgba(0,200,255,.08); border: 1px solid rgba(0,200,255,.25);
+  color: var(--accent); padding: 6px 14px; border-radius: 4px; min-width: 120px;
+  text-align: center; transition: all .2s;
+}
+.range-chip.empty { color: var(--text-dim); border-color: var(--border); background: transparent; }
+.range-chip.selecting { border-color: var(--warn); color: var(--warn); background: rgba(255,204,0,.07); }
+.range-sep { font-family: var(--mono); color: var(--text-dim); }
+.range-hint { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: .05em; }
 
-.sep { font-family: var(--mono); font-size: 18px; color: var(--text-dim); padding-bottom: 8px; }
+/* Mini Calendar */
+.cal-wrap { user-select: none; }
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.cal-nav {
+  background: none; border: 1px solid var(--border); color: var(--text-dim);
+  font-family: var(--mono); font-size: 14px; width: 30px; height: 30px;
+  border-radius: 4px; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center;
+}
+.cal-nav:hover { border-color: var(--accent); color: var(--accent); }
+.cal-month-label { font-family: var(--mono); font-size: 14px; color: var(--text); letter-spacing: .1em; }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+}
+.cal-dow {
+  font-family: var(--mono); font-size: 10px; color: var(--text-dim);
+  text-align: center; padding: 4px 0; letter-spacing: .05em;
+}
+.cal-day {
+  font-family: var(--mono); font-size: 12px; text-align: center;
+  padding: 7px 2px; border-radius: 4px; cursor: pointer;
+  transition: all .15s; position: relative; color: var(--text);
+  border: 1px solid transparent;
+}
+.cal-day:hover:not(.other-month):not(.empty) { background: rgba(0,200,255,.12); border-color: rgba(0,200,255,.3); }
+.cal-day.other-month { color: var(--text-dim); opacity: .35; cursor: default; }
+.cal-day.empty { cursor: default; }
+.cal-day.today { border-color: rgba(0,200,255,.4); color: var(--accent); }
+.cal-day.start-day { background: var(--accent); color: #000; font-weight: bold; border-color: var(--accent); }
+.cal-day.end-day   { background: var(--accent2); color: #fff; font-weight: bold; border-color: var(--accent2); }
+.cal-day.in-range  { background: rgba(0,200,255,.12); border-color: rgba(0,200,255,.15); }
+.cal-day.start-day.end-day { background: var(--green); color: #000; border-color: var(--green); }
 
+.fetch-row { margin-top: 18px; display: flex; align-items: center; gap: 14px; }
 .fetch-btn {
-  padding: 9px 26px;
-  background: transparent; border: 1px solid var(--accent); color: var(--accent);
-  font-family: var(--mono); font-size: 12px; letter-spacing: .15em;
-  cursor: pointer; border-radius: 4px; transition: all .2s;
-  text-transform: uppercase; position: relative; overflow: hidden;
+  padding: 9px 26px; background: transparent; border: 1px solid var(--accent); color: var(--accent);
+  font-family: var(--mono); font-size: 12px; letter-spacing: .15em; cursor: pointer;
+  border-radius: 4px; transition: all .2s; text-transform: uppercase; position: relative; overflow: hidden;
 }
 .fetch-btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--accent); transform: translateX(-100%);
-  transition: transform .25s; opacity: .12;
+  content: ''; position: absolute; inset: 0; background: var(--accent);
+  transform: translateX(-100%); transition: transform .25s; opacity: .12;
 }
 .fetch-btn:hover::before { transform: translateX(0); }
 .fetch-btn:hover { box-shadow: 0 0 12px rgba(0,200,255,.3); }
 .fetch-btn:disabled { opacity: .35; cursor: not-allowed; }
+.clear-btn {
+  background: none; border: 1px solid var(--border); color: var(--text-dim);
+  font-family: var(--mono); font-size: 11px; padding: 8px 14px; border-radius: 4px;
+  cursor: pointer; transition: all .2s;
+}
+.clear-btn:hover { border-color: var(--red); color: var(--red); }
 
-/* ===== RESULTS ===== */
+/* RESULTS */
 .summary-bar {
   font-family: var(--mono); font-size: 11px; color: var(--text-dim);
-  padding: 0 0 16px; letter-spacing: .1em;
-  border-bottom: 1px solid var(--border); margin-bottom: 20px;
+  padding: 0 0 14px; letter-spacing: .1em;
+  border-bottom: 1px solid var(--border); margin-bottom: 18px;
 }
 .summary-bar span { color: var(--accent); }
-
 .event-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  margin-bottom: 14px;
-  overflow: hidden;
-  opacity: 0; transform: translateY(8px);
+  background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+  margin-bottom: 12px; overflow: hidden; opacity: 0; transform: translateY(8px);
   animation: slide-in .3s ease forwards;
 }
 @keyframes slide-in { to { opacity: 1; transform: translateY(0); } }
-
 .event-header {
-  padding: 12px 18px;
-  background: rgba(0,200,255,.04);
+  padding: 10px 16px; background: rgba(0,200,255,.04);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
@@ -306,47 +256,33 @@ main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
   font-family: var(--mono); font-size: 10px; padding: 2px 6px; border-radius: 2px;
   background: rgba(255,107,53,.12); border: 1px solid rgba(255,107,53,.35); color: var(--accent2);
 }
-
-.event-body { padding: 14px 18px; }
-.event-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
-.meta-item {
-  display: flex; align-items: center; gap: 5px;
-  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
-}
-
+.event-body { padding: 12px 16px; }
+.event-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.meta-item { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
 .memo-label {
   font-family: var(--mono); font-size: 10px; letter-spacing: .2em;
-  color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 7px; text-transform: uppercase;
 }
 .memo-content {
-  background: rgba(0,0,0,.3);
-  border: 1px solid #1a2a3a; border-left: 3px solid var(--accent);
-  padding: 10px 14px;
-  font-family: var(--mono); font-size: 12px; line-height: 1.8;
-  color: var(--text); white-space: pre-wrap; word-break: break-word;
-  border-radius: 0 4px 4px 0;
+  background: rgba(0,0,0,.3); border: 1px solid #1a2a3a; border-left: 3px solid var(--accent);
+  padding: 10px 14px; font-family: var(--mono); font-size: 12px; line-height: 1.8;
+  color: var(--text); white-space: pre-wrap; word-break: break-word; border-radius: 0 4px 4px 0;
 }
 .no-memo { font-family: var(--mono); font-size: 12px; color: var(--text-dim); font-style: italic; }
-
-.state-msg {
-  padding: 48px 24px; text-align: center;
-  font-family: var(--mono); font-size: 13px;
-}
-.state-msg.idle { color: var(--text-dim); }
+.state-msg { padding: 44px 24px; text-align: center; font-family: var(--mono); font-size: 13px; }
+.state-msg.idle    { color: var(--text-dim); }
 .state-msg.loading { color: var(--accent); }
-.state-msg.error { color: var(--red); }
+.state-msg.error   { color: var(--red); white-space: pre-wrap; }
 .loader {
-  width: 36px; height: 36px;
-  border: 2px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin .8s linear infinite;
-  margin: 0 auto 16px;
+  width: 34px; height: 34px; border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<!-- ===== SETTINGS MODAL ===== -->
+<!-- SETTINGS MODAL -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <div class="modal-header">
@@ -354,31 +290,26 @@ main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
-
       <div class="field-group">
         <label class="field-label">Google API Key</label>
         <p class="field-desc">Google Calendar API を呼び出すための API キーです。</p>
         <input class="field-input" type="password" id="inputApiKey" placeholder="AIza...">
       </div>
-
       <div class="field-group">
         <label class="field-label">OAuth Client ID</label>
-        <p class="field-desc">ユーザーの Google アカウントへのアクセス許可に使用します。</p>
-        <input class="field-input" type="text" id="inputClientId" placeholder="xxxx.apps.googleusercontent.com">
+        <p class="field-desc">xxxxxxxx.apps.googleusercontent.com の形式で入力してください。</p>
+        <input class="field-input" type="text" id="inputClientId" placeholder="123456789-abc.apps.googleusercontent.com">
       </div>
-
       <div class="field-group">
         <label class="field-label">対象カレンダー名</label>
-        <p class="field-desc">メモを抽出したいカレンダーの名前（デフォルト: 2フライト）</p>
         <input class="field-input" type="text" id="inputCalName" placeholder="2フライト">
       </div>
-
       <div class="hint-box">
         <strong style="color:var(--accent)">設定手順</strong><br>
         1. <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> でプロジェクトを作成<br>
         2. 「Google Calendar API」を有効化<br>
-        3. 認証情報 → API キーを作成（Calendar API に制限推奨）<br>
-        4. 認証情報 → OAuth 2.0 クライアントID を作成（Webアプリ）<br>
+        3. 認証情報 → API キーを作成<br>
+        4. 認証情報 → OAuth 2.0 クライアントID を作成（ウェブアプリ）<br>
         5. 承認済みオリジンに GitHub Pages の URL を追加<br>
         ⚠ 入力値はブラウザの localStorage にのみ保存されます。
       </div>
@@ -390,7 +321,7 @@ main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
   </div>
 </div>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <header>
   <div class="logo">
     <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
@@ -401,166 +332,313 @@ main { max-width: 860px; margin: 0 auto; padding: 28px 20px; }
   </div>
   <div class="header-right">
     <div class="status-badge" id="statusBadge">
-      <span class="sdot"></span>
-      <span id="statusText">未認証</span>
+      <span class="sdot"></span><span id="statusText">未設定</span>
     </div>
     <button class="settings-btn" onclick="openModal()">⚙ SETTINGS</button>
   </div>
 </header>
 
-<!-- ===== SETUP BANNER ===== -->
-<div id="setupBanner" style="display:none">
+<div id="setupBannerWrap" style="padding:0 20px; max-width:860px; margin:0 auto; display:none">
   <div class="setup-banner">
-    ⚠ API Key と OAuth Client ID が未設定です。設定画面から入力してください。
+    ⚠ API Key と OAuth Client ID が未設定です。
     <button onclick="openModal()">設定を開く</button>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
+<!-- MAIN -->
 <main>
   <div class="query-panel">
-    <div class="panel-label">// 抽出期間を指定</div>
-    <div class="date-row">
-      <div class="date-group">
-        <label>FROM</label>
-        <input type="date" id="dateFrom">
+    <div class="panel-label">// 期間を選択（1タップ目: 開始日 / 2タップ目: 終了日）</div>
+
+    <div class="range-display">
+      <div class="range-chip empty" id="chipFrom">開始日</div>
+      <span class="range-sep">→</span>
+      <div class="range-chip empty" id="chipTo">終了日</div>
+      <span class="range-hint" id="rangeHint">カレンダーの日付をタップ</span>
+    </div>
+
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="moveMonth(-1)">‹</button>
+        <span class="cal-month-label" id="calMonthLabel"></span>
+        <button class="cal-nav" onclick="moveMonth(1)">›</button>
       </div>
-      <div class="sep">—</div>
-      <div class="date-group">
-        <label>TO</label>
-        <input type="date" id="dateTo">
+      <div class="cal-grid" id="calGrid">
+        <div class="cal-dow">日</div>
+        <div class="cal-dow">月</div>
+        <div class="cal-dow">火</div>
+        <div class="cal-dow">水</div>
+        <div class="cal-dow">木</div>
+        <div class="cal-dow">金</div>
+        <div class="cal-dow">土</div>
       </div>
+    </div>
+
+    <div class="fetch-row">
       <button class="fetch-btn" id="fetchBtn" onclick="startFetch()">▶ EXTRACT MEMOS</button>
+      <button class="clear-btn" onclick="clearSelection()">✕ リセット</button>
     </div>
   </div>
 
   <div id="resultsArea">
-    <div class="state-msg idle">日付範囲を指定して「EXTRACT MEMOS」を押してください</div>
+    <div class="state-msg idle">期間を選択して「EXTRACT MEMOS」を押してください</div>
   </div>
 </main>
 
 <script>
-// ── Config ──────────────────────────────────────────────
-const LS_API_KEY    = 'flightlog_api_key';
-const LS_CLIENT_ID  = 'flightlog_client_id';
-const LS_CAL_NAME   = 'flightlog_cal_name';
+// ── Storage keys ───────────────────────────────────────
+const LS_KEY     = 'flightlog_api_key';
+const LS_CID     = 'flightlog_client_id';
+const LS_CALNAME = 'flightlog_cal_name';
 
-const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-const DISCOVERY = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+// ── State ──────────────────────────────────────────────
+let selStart = null; // Date obj
+let selEnd   = null; // Date obj
+let tapCount = 0;    // 0=none, 1=start picked
 
-let gapiReady = false;
-let gisReady  = false;
+let calYear, calMonth; // displayed month
+let gapiLoaded = false;
 let tokenClient = null;
 let accessToken = null;
 
-// ── Init ────────────────────────────────────────────────
-window.onload = () => {
-  // Default dates
-  const today   = new Date();
-  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-  document.getElementById('dateFrom').value = weekAgo.toISOString().split('T')[0];
-  document.getElementById('dateTo').value   = today.toISOString().split('T')[0];
-
-  loadSettings();
+// ── Init ───────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCalendar();
+  loadSettingsToForm();
   checkSetup();
-  loadGoogleLibs();
-};
+});
 
-function loadSettings() {
-  document.getElementById('inputApiKey').value  = localStorage.getItem(LS_API_KEY)   || '';
-  document.getElementById('inputClientId').value = localStorage.getItem(LS_CLIENT_ID) || '';
-  document.getElementById('inputCalName').value  = localStorage.getItem(LS_CAL_NAME)  || '2フライト';
+// ── Settings ───────────────────────────────────────────
+function loadSettingsToForm() {
+  document.getElementById('inputApiKey').value  = localStorage.getItem(LS_KEY)     || '';
+  document.getElementById('inputClientId').value = localStorage.getItem(LS_CID)    || '';
+  document.getElementById('inputCalName').value  = localStorage.getItem(LS_CALNAME)|| '2フライト';
 }
-
 function saveSettings() {
   const k = document.getElementById('inputApiKey').value.trim();
   const c = document.getElementById('inputClientId').value.trim();
-  const n = document.getElementById('inputCalName').value.trim();
+  const n = document.getElementById('inputCalName').value.trim() || '2フライト';
   if (!k || !c) { alert('API Key と Client ID を入力してください'); return; }
-  localStorage.setItem(LS_API_KEY,   k);
-  localStorage.setItem(LS_CLIENT_ID, c);
-  localStorage.setItem(LS_CAL_NAME,  n || '2フライト');
+  // Strip accidental http:// prefix
+  const cleanC = c.replace(/^https?:\/\//, '');
+  localStorage.setItem(LS_KEY,     k);
+  localStorage.setItem(LS_CID,     cleanC);
+  localStorage.setItem(LS_CALNAME, n);
   closeModal();
-  // Reset token and reload libs
-  accessToken = null;
-  gapiReady = false; gisReady = false; tokenClient = null;
+  accessToken  = null;
+  gapiLoaded   = false;
+  tokenClient  = null;
   checkSetup();
-  loadGoogleLibs();
+  setStatus('準備中...', '');
+  initGoogleLibs();
 }
-
 function checkSetup() {
-  const hasKey = !!localStorage.getItem(LS_API_KEY);
-  const hasCid = !!localStorage.getItem(LS_CLIENT_ID);
-  document.getElementById('setupBanner').style.display = (hasKey && hasCid) ? 'none' : 'block';
-}
-
-// ── Google Libs ─────────────────────────────────────────
-function loadGoogleLibs() {
-  const apiKey   = localStorage.getItem(LS_API_KEY);
-  const clientId = localStorage.getItem(LS_CLIENT_ID);
-  if (!apiKey || !clientId) return;
-
-  // Load gapi
-  if (!document.getElementById('gapi-script')) {
-    const s = document.createElement('script');
-    s.id  = 'gapi-script';
-    s.src = 'https://apis.google.com/js/api.js';
-    s.onload = () => {
-      gapi.load('client', async () => {
-        await gapi.client.init({ apiKey, discoveryDocs: [DISCOVERY] });
-        gapiReady = true;
-        checkReady();
-      });
-    };
-    document.head.appendChild(s);
-  }
-
-  // Load GIS
-  if (!document.getElementById('gis-script')) {
-    const s = document.createElement('script');
-    s.id  = 'gis-script';
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.onload = () => {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: SCOPES,
-        callback: (resp) => {
-          if (resp.error) { setStatus('認証エラー', 'error'); return; }
-          accessToken = resp.access_token;
-          gapi.client.setToken({ access_token: accessToken });
-          setStatus('認証済み', 'ok');
-          doFetch(); // retry after auth
-        }
-      });
-      gisReady = true;
-      checkReady();
-    };
-    document.head.appendChild(s);
+  const ok = !!(localStorage.getItem(LS_KEY) && localStorage.getItem(LS_CID));
+  document.getElementById('setupBannerWrap').style.display = ok ? 'none' : 'block';
+  if (ok) {
+    setStatus('読み込み中...', '');
+    initGoogleLibs();
   }
 }
 
-function checkReady() {
-  if (gapiReady && gisReady) setStatus('準備完了', 'ok');
-}
-
-function setStatus(text, state) {
-  const badge = document.getElementById('statusBadge');
-  const span  = document.getElementById('statusText');
-  badge.className = 'status-badge' + (state === 'ok' ? ' ok' : state === 'error' ? ' error' : '');
-  span.textContent = text;
-}
-
-// ── Modal ───────────────────────────────────────────────
-function openModal()  { loadSettings(); document.getElementById('modalBg').classList.add('show'); }
+// ── Modal ──────────────────────────────────────────────
+function openModal()  { loadSettingsToForm(); document.getElementById('modalBg').classList.add('show'); }
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
 document.getElementById('modalBg').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 
-// ── Fetch ────────────────────────────────────────────────
+// ── Google Libs ────────────────────────────────────────
+function initGoogleLibs() {
+  const apiKey   = localStorage.getItem(LS_KEY);
+  const clientId = localStorage.getItem(LS_CID);
+  if (!apiKey || !clientId) return;
+
+  // Load gapi if not already
+  if (typeof gapi === 'undefined') {
+    const s = document.createElement('script');
+    s.src = 'https://apis.google.com/js/api.js';
+    s.onload = () => {
+      gapi.load('client', async () => {
+        try {
+          await gapi.client.init({
+            apiKey,
+            discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
+          });
+          gapiLoaded = true;
+          tryInitGis(clientId);
+        } catch(e) {
+          setStatus('API初期化失敗', 'error');
+          console.error(e);
+        }
+      });
+    };
+    s.onerror = () => setStatus('スクリプト読み込みエラー', 'error');
+    document.head.appendChild(s);
+  } else {
+    // gapi already loaded; just re-init client key
+    gapi.client.setApiKey(apiKey);
+    gapiLoaded = true;
+    tryInitGis(clientId);
+  }
+
+  // Load GIS if not already
+  if (typeof google === 'undefined' || !google.accounts) {
+    if (!document.getElementById('gis-script')) {
+      const s = document.createElement('script');
+      s.id  = 'gis-script';
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.onload = () => tryInitGis(clientId);
+      s.onerror = () => setStatus('GIS読み込みエラー', 'error');
+      document.head.appendChild(s);
+    }
+  } else {
+    tryInitGis(clientId);
+  }
+}
+
+function tryInitGis(clientId) {
+  if (typeof google === 'undefined' || !google.accounts) return; // not loaded yet
+  if (!gapiLoaded) return; // wait for gapi too
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+    callback: (resp) => {
+      if (resp.error) { setStatus('認証エラー', 'error'); return; }
+      accessToken = resp.access_token;
+      gapi.client.setToken({ access_token: accessToken });
+      setStatus('認証済み', 'ok');
+      doFetch();
+    }
+  });
+  setStatus('準備完了', 'ok');
+}
+
+// ── Calendar UI ────────────────────────────────────────
+function renderCalendar() {
+  const label = document.getElementById('calMonthLabel');
+  label.textContent = `${calYear}年 ${calMonth + 1}月`;
+
+  const grid = document.getElementById('calGrid');
+  // Remove old day cells (keep 7 DOW headers)
+  while (grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+  const today     = new Date(); today.setHours(0,0,0,0);
+  const firstDay  = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevDays  = new Date(calYear, calMonth, 0).getDate();
+
+  // Prev month padding
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = document.createElement('div');
+    d.className = 'cal-day other-month';
+    d.textContent = prevDays - i;
+    grid.appendChild(d);
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    date.setHours(0,0,0,0);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = d;
+
+    // Classes
+    if (date.getTime() === today.getTime()) cell.classList.add('today');
+    if (selStart && selEnd) {
+      const t = date.getTime();
+      const s = selStart.getTime();
+      const e = selEnd.getTime();
+      if (t === s && t === e) cell.classList.add('start-day', 'end-day');
+      else if (t === s) cell.classList.add('start-day');
+      else if (t === e) cell.classList.add('end-day');
+      else if (t > s && t < e) cell.classList.add('in-range');
+    } else if (selStart && date.getTime() === selStart.getTime()) {
+      cell.classList.add('start-day');
+    }
+
+    cell.addEventListener('click', () => onDayClick(date));
+    grid.appendChild(cell);
+  }
+
+  // Next month padding
+  const total = firstDay + daysInMonth;
+  const remainder = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= remainder; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day other-month';
+    cell.textContent = d;
+    grid.appendChild(cell);
+  }
+}
+
+function onDayClick(date) {
+  if (tapCount === 0 || tapCount === 2) {
+    // First tap: set start
+    selStart = date;
+    selEnd   = null;
+    tapCount = 1;
+    updateChips();
+  } else {
+    // Second tap: set end (allow same day)
+    if (date < selStart) {
+      selEnd   = selStart;
+      selStart = date;
+    } else {
+      selEnd = date;
+    }
+    tapCount = 2;
+    updateChips();
+  }
+  renderCalendar();
+}
+
+function updateChips() {
+  const chipFrom = document.getElementById('chipFrom');
+  const chipTo   = document.getElementById('chipTo');
+  const hint     = document.getElementById('rangeHint');
+
+  if (tapCount === 0) {
+    chipFrom.textContent = '開始日'; chipFrom.className = 'range-chip empty';
+    chipTo.textContent   = '終了日'; chipTo.className   = 'range-chip empty';
+    hint.textContent = 'カレンダーの日付をタップ';
+  } else if (tapCount === 1) {
+    chipFrom.textContent = fmtChip(selStart); chipFrom.className = 'range-chip';
+    chipTo.textContent   = '終了日';          chipTo.className   = 'range-chip selecting';
+    hint.textContent = '終了日をタップ';
+  } else {
+    chipFrom.textContent = fmtChip(selStart); chipFrom.className = 'range-chip';
+    chipTo.textContent   = fmtChip(selEnd);   chipTo.className   = 'range-chip';
+    hint.textContent = '選択完了';
+  }
+}
+
+function fmtChip(d) {
+  return d.toLocaleDateString('ja-JP', { month:'2-digit', day:'2-digit', weekday:'short' });
+}
+
+function clearSelection() {
+  selStart = null; selEnd = null; tapCount = 0;
+  updateChips(); renderCalendar();
+  document.getElementById('resultsArea').innerHTML = '<div class="state-msg idle">期間を選択して「EXTRACT MEMOS」を押してください</div>';
+}
+
+function moveMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  renderCalendar();
+}
+
+// ── Fetch ──────────────────────────────────────────────
 function startFetch() {
-  if (!localStorage.getItem(LS_API_KEY)) { openModal(); return; }
-  if (!gapiReady || !gisReady) {
-    setArea('loading', 'Google ライブラリを読み込み中...');
-    setTimeout(startFetch, 800);
+  if (!localStorage.getItem(LS_KEY)) { openModal(); return; }
+  if (!selStart) { alert('開始日を選択してください'); return; }
+  if (!selEnd)   { alert('終了日を選択してください'); return; }
+  if (!gapiLoaded || !tokenClient) {
+    setArea('error', 'Google ライブラリがまだ読み込まれていません。\nページをリロードするか、SETTINGS を開いて保存し直してください。');
     return;
   }
   if (!accessToken) {
@@ -571,33 +649,25 @@ function startFetch() {
 }
 
 async function doFetch() {
-  const fromVal = document.getElementById('dateFrom').value;
-  const toVal   = document.getElementById('dateTo').value;
-  if (!fromVal || !toVal) { alert('日付を指定してください'); return; }
-
   document.getElementById('fetchBtn').disabled = true;
   setArea('loading', 'カレンダーデータを取得中...');
   setStatus('取得中...', '');
 
   try {
-    const calName = (localStorage.getItem(LS_CAL_NAME) || '2フライト').trim();
-
-    // 1. Get calendar list
+    const calName = localStorage.getItem(LS_CALNAME) || '2フライト';
     const calList = await gapi.client.calendar.calendarList.list();
-    const items   = calList.result.items || [];
-    const cal     = items.find(c => c.summary === calName);
+    const cal     = (calList.result.items || []).find(c => c.summary === calName);
 
     if (!cal) {
-      const names = items.map(c => c.summary).join('、');
+      const names = (calList.result.items || []).map(c => c.summary).join('、');
       setArea('error', `「${calName}」カレンダーが見つかりません。\n利用可能: ${names}`);
       setStatus('カレンダー不明', 'error');
       document.getElementById('fetchBtn').disabled = false;
       return;
     }
 
-    // 2. List events
-    const timeMin = new Date(fromVal + 'T00:00:00').toISOString();
-    const timeMax = new Date(toVal   + 'T23:59:59').toISOString();
+    const timeMin = new Date(selStart.getFullYear(), selStart.getMonth(), selStart.getDate(), 0,0,0).toISOString();
+    const timeMax = new Date(selEnd.getFullYear(),   selEnd.getMonth(),   selEnd.getDate(),   23,59,59).toISOString();
 
     const evRes = await gapi.client.calendar.events.list({
       calendarId: cal.id,
@@ -607,9 +677,8 @@ async function doFetch() {
       maxResults: 250
     });
 
-    const events = evRes.result.items || [];
-    renderResults(events, fromVal, toVal, calName);
-    setStatus(`${events.length} 件取得`, 'ok');
+    renderResults(evRes.result.items || [], calName);
+    setStatus(`${(evRes.result.items||[]).length} 件取得`, 'ok');
 
   } catch (err) {
     console.error(err);
@@ -621,24 +690,23 @@ async function doFetch() {
       setStatus('エラー', 'error');
     }
   }
-
   document.getElementById('fetchBtn').disabled = false;
 }
 
-// ── Render ───────────────────────────────────────────────
-function renderResults(events, fromVal, toVal, calName) {
+// ── Render ─────────────────────────────────────────────
+function renderResults(events, calName) {
   const area = document.getElementById('resultsArea');
   if (!events.length) {
-    area.innerHTML = `<div class="state-msg idle">「${esc(calName)}」に ${fromVal} 〜 ${toVal} のイベントがありませんでした</div>`;
+    area.innerHTML = `<div class="state-msg idle">「${esc(calName)}」に選択期間のイベントがありませんでした</div>`;
     return;
   }
   area.innerHTML = `
     <div class="summary-bar">
       カレンダー: <span>${esc(calName)}</span> &nbsp;|&nbsp;
-      期間: <span>${fromVal}</span> 〜 <span>${toVal}</span> &nbsp;|&nbsp;
+      期間: <span>${fmtChip(selStart)}</span> 〜 <span>${fmtChip(selEnd)}</span> &nbsp;|&nbsp;
       件数: <span>${events.length}</span>
     </div>
-    ${events.map((ev, i) => cardHTML(ev, i)).join('')}
+    ${events.map((ev,i) => cardHTML(ev, i)).join('')}
   `;
 }
 
@@ -647,33 +715,32 @@ function cardHTML(ev, i) {
   const end     = ev.end?.dateTime   || ev.end?.date   || '';
   const hasTime = !!ev.start?.dateTime;
   const memo    = ev.description || '';
-
   return `
-    <div class="event-card" style="animation-delay:${i * 0.06}s">
+    <div class="event-card" style="animation-delay:${i*0.06}s">
       <div class="event-header">
-        <span class="event-date-badge">${fmtDate(start)}${hasTime ? ' ' + fmtTime(start) : ''}</span>
-        <span class="event-title">${esc(ev.summary || '（タイトルなし）')}</span>
+        <span class="event-date-badge">${fmtDate(start)}${hasTime?' '+fmtTime(start):''}</span>
+        <span class="event-title">${esc(ev.summary||'（タイトルなし）')}</span>
         <span class="flight-tag">2フライト</span>
       </div>
       <div class="event-body">
-        ${hasTime ? `<div class="event-meta"><div class="meta-item">🕐 ${fmtTime(start)} — ${fmtTime(end)}</div>${ev.location ? `<div class="meta-item">📍 ${esc(ev.location)}</div>` : ''}</div>` : ''}
+        ${hasTime?`<div class="event-meta"><div class="meta-item">🕐 ${fmtTime(start)} — ${fmtTime(end)}</div>${ev.location?`<div class="meta-item">📍 ${esc(ev.location)}</div>`:''}</div>`:''}
         <div class="memo-label">// MEMO / DESCRIPTION</div>
-        ${memo
-          ? `<div class="memo-content">${esc(memo)}</div>`
-          : `<div class="no-memo">メモなし</div>`}
+        ${memo?`<div class="memo-content">${esc(memo)}</div>`:`<div class="no-memo">メモなし</div>`}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── Helpers ──────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────
 function setArea(type, msg) {
   document.getElementById('resultsArea').innerHTML =
     type === 'loading'
       ? `<div class="state-msg loading"><div class="loader"></div>${msg}</div>`
       : `<div class="state-msg ${type}">${esc(msg)}</div>`;
 }
-
+function setStatus(text, state) {
+  document.getElementById('statusBadge').className = 'status-badge' + (state==='ok'?' ok':state==='error'?' error':'');
+  document.getElementById('statusText').textContent = text;
+}
 function fmtDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('ja-JP', { month:'2-digit', day:'2-digit', weekday:'short' });
