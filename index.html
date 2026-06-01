@@ -340,24 +340,62 @@ const AIRPORT_TZ = {
   HNL:'Pacific/Honolulu',
 };
 
+// Fixed UTC offset table (minutes). No DST ambiguity for fixed-offset zones.
+const AIRPORT_OFFSET = {
+  // Japan / Korea (UTC+9, no DST)
+  HND:540,NRT:540,ITM:540,KIX:540,CTS:540,FUK:540,OKA:540,NGO:540,
+  SDJ:540,KMJ:540,KOJ:540,OIT:540,KMI:540,AOJ:540,HIJ:540,TAK:540,
+  UBJ:540,TKS:540,MYJ:540,KCZ:540,
+  ICN:540,GMP:540,PUS:540,
+  // China / Taiwan (UTC+8, no DST)
+  PEK:480,PKX:480,PVG:480,SHA:480,CAN:480,SZX:480,CTU:480,KMG:480,XIY:480,
+  TPE:480,TSA:480,
+  // Hong Kong / Singapore / Malaysia / Philippines (UTC+8, no DST)
+  HKG:480,SIN:480,KUL:480,MNL:480,
+  // Thailand / Vietnam (UTC+7, no DST)
+  BKK:420,DMK:420,SGN:420,HAN:420,
+  // Indonesia
+  CGK:420, DPS:480,
+  // Myanmar (UTC+6:30)
+  RGN:390,
+  // Bangladesh (UTC+6)
+  DAC:360,
+  // India / Sri Lanka (UTC+5:30)
+  DEL:330,BOM:330,MAA:330,BLR:330,CMB:330,
+  // UAE (UTC+4)
+  DXB:240,AUH:240,SHJ:240,
+  // Qatar / Bahrain / Saudi (UTC+3)
+  DOH:180,BAH:180,RUH:180,JED:180,
+  // Hawaii (UTC-10)
+  HNL:-600,
+};
+
 function getLocalTime(utcHHMM, iataCode) {
-  const tz = AIRPORT_TZ[iataCode] || null;
-  if (!tz) return { time: utcHHMM, suffix: 'Z', note: '' };
+  if (!iataCode) return { time: utcHHMM, suffix: 'Z' };
+  const [h, m] = utcHHMM.split(':').map(Number);
+  const utcMin = h * 60 + m;
+
+  // 1) Fixed-offset table — most reliable
+  if (iataCode in AIRPORT_OFFSET) {
+    const offset = AIRPORT_OFFSET[iataCode];
+    const local = ((utcMin + offset) % 1440 + 1440) % 1440;
+    const lh = String(Math.floor(local / 60)).padStart(2, '0');
+    const lm = String(local % 60).padStart(2, '0');
+    return { time: `${lh}:${lm}`, suffix: 'L' };
+  }
+
+  // 2) DST-aware zones (Europe / North America) via toLocaleTimeString
+  const tz = AIRPORT_TZ[iataCode];
+  if (!tz) return { time: utcHHMM, suffix: 'Z' };
   try {
-    // Use a fixed reference date; we only care about HH:MM
-    const [h, m] = utcHHMM.split(':').map(Number);
-    // Build a UTC date (use 2000-01-15 as base to avoid DST edge issues with Jan 1)
-    const utcMs = Date.UTC(2000, 0, 15, h, m, 0);
-    const fmt = new Intl.DateTimeFormat('en-GB', {
-      timeZone: tz,
-      hour: '2-digit', minute: '2-digit', hour12: false
+    const utcMs = Date.UTC(2000, 5, 15, h, m, 0); // June = summer time
+    const str = new Date(utcMs).toLocaleTimeString('en-GB', {
+      timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false
     });
-    const parts = fmt.formatToParts(new Date(utcMs));
-    const hh = parts.find(p=>p.type==='hour')?.value   || '00';
-    const mm = parts.find(p=>p.type==='minute')?.value || '00';
-    return { time: `${hh}:${mm}`, suffix: 'L', note: '' };
+    const parts = str.split(':');
+    return { time: `${parts[0]}:${parts[1]}`, suffix: 'L' };
   } catch(e) {
-    return { time: utcHHMM, suffix: 'Z', note: '' };
+    return { time: utcHHMM, suffix: 'Z' };
   }
 }
 
@@ -515,168 +553,36 @@ function renderResults(events,calName){
 function eventCardHTML(ev,idx){
   const start=ev.start?.dateTime||ev.start?.date||'';
   const memo=ev.description||'';
-  const parsed=parsePairing(memo);
-  const flightCount=parsed?parsed.days.reduce((n,d)=>n+d.rows.filter(r=>r.type==='flight').length,0):0;
+  const extracted=extractPairingText(memo);
   return `
     <div class="event-card" style="animation-delay:${idx*0.07}s">
       <div class="event-header">
         <span class="event-date-badge">${fmtDate(start)}</span>
         <span class="event-title">${esc(ev.summary||'（タイトルなし）')}</span>
-        ${flightCount>0?`<span class="flight-count">✈ ${flightCount}</span>`:''}
       </div>
-      ${parsed?parsedHTML(parsed,memo):rawFallbackHTML(memo)}
+      <div class="raw-memo show"><pre>${esc(extracted||'メモなし')}</pre></div>
     </div>`;
 }
 
-// ── Parser ─────────────────────────────────────────────
-function parsePairing(text){
-  if(!text||!text.includes('Check-in'))return null;
+// Pairing id: 行から最後の Release 行（時刻・空港含む1行）までを抽出
+function extractPairingText(text){
+  if(!text) return '';
   const lines=text.split('\n');
-  let pairingId=null;
-  for(const l of lines){const m=l.match(/Pairing\s+id:\s*(.+)/i);if(m){pairingId=m[1].trim();break;}}
 
-  const days=[];
-  let cur=null;
-  const dayRe=/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s+\d+\s+\w+\s+\d{4}/;
-  // flight: leading number, two times, 3L - 3L, role
-  const flightRe=/^\s*(\d{2,4})\s+(\d{2}:\d{2})\s+(\d{2}:\d{2})\s+([A-Z]{3})\s*-\s*([A-Z]{3})\s+(\S+)/;
-  const specialRe=/^\s*(Check-in|Release|Transport|Hotel)\s+(\d{2}:\d{2})(?:\s+(\d{2}:\d{2}))?/i;
-  const trainingRe=/^\s*trainings?:/i;
-
-  let lastFlight=null;
+  // 開始行: "Pairing id:" を含む行
+  let startIdx=-1;
   for(let i=0;i<lines.length;i++){
-    const line=lines[i];
-    if(!line.trim()||line.match(/^-{3,}/)||line.match(/Pairing\s+id/i)||line.match(/All times/i))continue;
-    if(line.match(dayRe)){cur={label:line.trim(),rows:[]};days.push(cur);lastFlight=null;continue;}
-    if(!cur)continue;
-
-    const fm=line.match(flightRe);
-    if(fm){
-      const [,num,dep,arr,from,to,role]=fm;
-      const r={type:'flight',num,dep,arr,from,to,role:role.toUpperCase(),trainings:[]};
-      cur.rows.push(r);lastFlight=r;continue;
-    }
-    if(line.match(trainingRe)&&lastFlight){
-      // collect training detail lines
-      let t=line.replace(/^\s*trainings?:\s*/i,'').trim();
-      while(i+1<lines.length&&lines[i+1].match(/^\s{10,}/)&&!lines[i+1].match(flightRe)&&!lines[i+1].match(specialRe)&&!lines[i+1].match(dayRe)){
-        i++;const x=lines[i].trim();if(x)t+=(t?' / ':'')+x;
-      }
-      if(t)lastFlight.trainings.push(t);
-      continue;
-    }
-    const sm=line.match(specialRe);
-    if(sm){
-      const [,kind,t1,t2]=sm;
-      // collect detail (hotel name, transport destination etc.)
-      let detail='';
-      while(i+1<lines.length&&lines[i+1].match(/^\s{10,}/)&&!lines[i+1].match(flightRe)&&!lines[i+1].match(specialRe)&&!lines[i+1].match(dayRe)&&!lines[i+1].match(trainingRe)){
-        i++;const x=lines[i].trim();
-        if(x&&!x.match(/^(Phone|Email|Booking|Vehicle|Address|N\/A):/i)&&!x.match(/^-{3,}/))
-          detail=(detail?'\n':'')+x;
-      }
-      cur.rows.push({type:'special',kind:kind.toLowerCase(),t1,t2:t2||null,detail});
-      lastFlight=null;continue;
-    }
+    if(lines[i].match(/Pairing\s+id:/i)){startIdx=i;break;}
   }
-  if(!days.length)return null;
-  return{pairingId,days};
-}
+  if(startIdx===-1) return text; // Pairing id が無ければ全文返す
 
-// ── Render parsed ──────────────────────────────────────
-function timeSuf(t,suf){
-  if(suf==='Z') return `${esc(t)}<span class="suf-z">Z</span>`;
-  return `${esc(t)}<span class="suf-l">L</span>`;
-}
-
-function parsedHTML(parsed,rawMemo){
-  let html='';
-  if(parsed.pairingId)
-    html+=`<div class="pairing-id-bar">${esc(parsed.pairingId)}</div>`;
-
-  for(const day of parsed.days){
-    html+=`<div class="day-block"><div class="day-heading">${esc(day.label)}</div><div class="tl">`;
-    for(const row of day.rows){
-      if(row.type==='flight'){
-        const isDH=row.role==='DEADHEAD'||row.role==='DH';
-        const roleStr=isDH?'DEADHEAD':row.role;
-        html+=`<div class="tl-row">
-          <span class="tl-label flight">JL${esc(row.num)}</span>
-          <span class="tl-val">
-            ${esc(row.from)} ${timeSuf(row.dep,'Z')}
-            <span class="sep">→</span>
-            ${esc(row.to)} ${timeSuf(row.arr,'Z')}
-            <span class="role${isDH?' dh':''}">${esc(roleStr)}</span>
-          </span>
-        </div>`;
-      } else {
-        const k=row.kind;
-        if(k==='check-in'){
-          const loc=guessCheckinAirport(day,row);
-          const lt=getLocalTime(row.t1,loc);
-          html+=`<div class="tl-row">
-            <span class="tl-label checkin">CHECK-IN</span>
-            <span class="tl-val">${timeSuf(lt.time,lt.suffix)} ${loc?`<span class="route">${esc(loc)}</span>`:''}</span>
-          </div>`;
-        } else if(k==='release'){
-          const loc=guessReleaseAirport(day,row);
-          const lt=getLocalTime(row.t1,loc);
-          html+=`<div class="tl-row">
-            <span class="tl-label release">RELEASE</span>
-            <span class="tl-val">${timeSuf(lt.time,lt.suffix)} ${loc?`<span class="route">${esc(loc)}</span>`:''}</span>
-          </div>`;
-        } else if(k==='transport'){
-          const loc=guessTransportLocation(day,row);
-          const lt=getLocalTime(row.t1,loc);
-          html+=`<div class="tl-row">
-            <span class="tl-label transport">TRANSPORT</span>
-            <span class="tl-val">${timeSuf(lt.time,lt.suffix)}${row.t2?` → ${timeSuf(getLocalTime(row.t2,loc).time,getLocalTime(row.t2,loc).suffix)}`:''}${loc?` <span class="route">${esc(loc)}</span>`:''}</span>
-          </div>`;
-        } else if(k==='hotel'){
-          // First non-empty detail line = hotel name
-          const hotelName=(row.detail||'').split('\n')[0].trim();
-          html+=`<div class="tl-row">
-            <span class="tl-label hotel">HOTEL</span>
-            <span class="tl-val"><span class="hotel-name">${esc(hotelName||'—')}</span></span>
-          </div>`;
-        }
-      }
-    }
-    html+=`</div></div>`;
+  // 終了行: 最後の Release 行（時刻を含む）
+  let endIdx=startIdx;
+  for(let i=startIdx;i<lines.length;i++){
+    if(lines[i].match(/^\s*Release\s+\d{2}:\d{2}/i)) endIdx=i;
   }
-  html+=`<button class="raw-toggle" onclick="toggleRaw(this)">▶ 元のメモを表示</button><div class="raw-memo"><pre>${esc(rawMemo)}</pre></div>`;
-  return html;
-}
 
-// Infer airport code from surrounding context
-function guessCheckinAirport(day,row){
-  // First flight of the day: departure airport
-  const firstFlight=day.rows.find(r=>r.type==='flight');
-  return firstFlight?firstFlight.from:null;
-}
-function guessReleaseAirport(day,row){
-  // Last flight of the day: arrival airport
-  const flights=day.rows.filter(r=>r.type==='flight');
-  return flights.length?flights[flights.length-1].to:null;
-}
-function guessTransportLocation(day,row){
-  // Transport after release → last arrival; transport before checkin → first departure
-  const idx=day.rows.indexOf(row);
-  // Look backward for a flight
-  for(let i=idx-1;i>=0;i--){if(day.rows[i].type==='flight')return day.rows[i].to;}
-  // Look forward
-  for(let i=idx+1;i<day.rows.length;i++){if(day.rows[i].type==='flight')return day.rows[i].from;}
-  return null;
-}
-
-function rawFallbackHTML(memo){
-  if(!memo)return`<div style="padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--text-dim)">メモなし</div>`;
-  return`<button class="raw-toggle" onclick="toggleRaw(this)">▶ メモを表示</button><div class="raw-memo show"><pre>${esc(memo)}</pre></div>`;
-}
-function toggleRaw(btn){
-  const raw=btn.nextElementSibling;
-  const showing=raw.classList.toggle('show');
-  btn.textContent=(showing?'▼ ':'▶ ')+(btn.textContent.includes('元の')?'元のメモを表示':'メモを表示');
+  return lines.slice(startIdx, endIdx+1).join('\n');
 }
 
 // ── Helpers ────────────────────────────────────────────
