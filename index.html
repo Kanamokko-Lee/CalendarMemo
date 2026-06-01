@@ -173,6 +173,20 @@ main { max-width: 820px; margin: 0 auto; padding: 24px 20px; }
 .state-msg.error { color: var(--red); white-space: pre-wrap; }
 .loader { width: 34px; height: 34px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 14px; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.copy-btn {
+  margin-left: auto; background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-family: var(--mono); font-size: 10px;
+  padding: 3px 10px; border-radius: 3px; cursor: pointer; transition: all .2s;
+  flex-shrink: 0;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-all-btn {
+  margin-left: auto; background: transparent; border: 1px solid var(--accent);
+  color: var(--accent); font-family: var(--mono); font-size: 11px;
+  padding: 4px 14px; border-radius: 3px; cursor: pointer; transition: all .2s;
+}
+.copy-all-btn:hover { background: rgba(0,200,255,.1); }
 </style>
 </head>
 <body>
@@ -542,11 +556,17 @@ async function doFetch(){
 }
 
 // ── Render ─────────────────────────────────────────────
+let allExtractedTexts = [];
+
 function renderResults(events,calName){
   const area=document.getElementById('resultsArea');
   if(!events.length){area.innerHTML=`<div class="state-msg idle">「${esc(calName)}」に選択期間のイベントがありませんでした</div>`;return;}
+  allExtractedTexts = events.map(ev=>extractPairingText(ev.description||'')).filter(t=>t);
   area.innerHTML=`
-    <div class="summary-bar">カレンダー: <span>${esc(calName)}</span> &nbsp;|&nbsp; 期間: <span>${fmtChip(selStart)}</span> 〜 <span>${fmtChip(selEnd)}</span> &nbsp;|&nbsp; 件数: <span>${events.length}</span></div>
+    <div class="summary-bar" style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span>カレンダー: <span>${esc(calName)}</span> &nbsp;|&nbsp; 期間: <span>${fmtChip(selStart)}</span> 〜 <span>${fmtChip(selEnd)}</span> &nbsp;|&nbsp; 件数: <span>${events.length}</span></span>
+      <button class="copy-all-btn" onclick="copyAll(this)">📋 全件まとめてコピー</button>
+    </div>
     ${events.map((ev,i)=>eventCardHTML(ev,i)).join('')}`;
 }
 
@@ -559,9 +579,35 @@ function eventCardHTML(ev,idx){
       <div class="event-header">
         <span class="event-date-badge">${fmtDate(start)}</span>
         <span class="event-title">${esc(ev.summary||'（タイトルなし）')}</span>
+        <button class="copy-btn" onclick="copyOne(this,${idx})">📋 コピー</button>
       </div>
       <div class="raw-memo show"><pre>${esc(extracted||'メモなし')}</pre></div>
     </div>`;
+}
+
+function copyOne(btn,idx){
+  copyToClipboard(allExtractedTexts[idx]||'', btn, '📋 コピー');
+}
+function copyAll(btn){
+  const text=allExtractedTexts.join('\n\n' + '='.repeat(40) + '\n\n');
+  copyToClipboard(text, btn, '📋 全件まとめてコピー');
+}
+function copyToClipboard(text, btn, resetLabel){
+  const done=()=>{
+    btn.textContent='✅ コピー済み';
+    btn.style.borderColor='var(--green)'; btn.style.color='var(--green)';
+    setTimeout(()=>{ btn.textContent=resetLabel; btn.style.borderColor=''; btn.style.color=''; },2000);
+  };
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
+  } else { fallbackCopy(text,done); }
+}
+function fallbackCopy(text,cb){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta); cb();
 }
 
 // Pairing id: 行から最後の Release 行（時刻・空港含む1行）までを抽出
